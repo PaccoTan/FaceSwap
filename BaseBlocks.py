@@ -4,6 +4,7 @@ import tensorflow.keras as keras
 from tensorflow.keras.layers import Conv2D, LeakyReLU,BatchNormalization, UpSampling2D, ReLU
 import numpy as np
 
+# Definitions of our architecture and blocks
 # %%
 def bottle_block(x,units=64,kernel=3):
     out = conv_block(x,units,kernel,1)
@@ -111,7 +112,7 @@ def multiscale_discriminator(input_shape):
     inputs = keras.layers.Input(input_shape)
     out = None
     return keras.Model(inputs,out)
-
+# VGG19 used for perceptual loss
 # %%
 vgg = keras.applications.vgg19.VGG19(
     include_top=True,
@@ -122,6 +123,7 @@ vgg = keras.applications.vgg19.VGG19(
     classes=1000,
     classifier_activation='softmax'
 )
+# Weights for training
 pixel_weight = 0.1
 perceptual_weight = 1
 adversarial_weight = 0.001
@@ -129,7 +131,7 @@ segmentation_weight = 0.1
 reconstruction_weight = 1
 stepwise_weight = 1
 
-
+# SOme of the loss functions we defined
 # %%
 def perceptual_loss(y_true, y_pred):
     x = tf.image.resize(y_true,(224,224))
@@ -149,7 +151,7 @@ def adversarial_loss(y_true, y_pred):
     pass
 def poisson_blending_loss(y_true, y_pred):
     return reconstruction_loss()
-
+# Getting the test images into a dataset
 # %%
 dataset = tf.keras.utils.image_dataset_from_directory(
     'dataset/CelebA-HQ-img/',
@@ -167,23 +169,7 @@ dataset = tf.keras.utils.image_dataset_from_directory(
     follow_links=False,
     crop_to_aspect_ratio=False
 )
-# masks = tf.keras.utils.image_dataset_from_directory(
-#     'dataset/CelebAMask-HQ-mask-anno/',
-#     labels="inferred",
-#     label_mode='int',
-#     class_names=['hair', 'skin'],
-#     color_mode='grayscale',
-#     batch_size=2,
-#     image_size=(256, 256),
-#     shuffle=False,
-#     seed=None,
-#     validation_split=None,
-#     subset=None,
-#     interpolation='nearest',
-#     follow_links=False,
-#     crop_to_aspect_ratio=False
-# )
-
+# Getting the masks
 # %%
 mask = np.zeros((10000,128,128,2))
 for i in range(0,10000):
