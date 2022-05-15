@@ -133,6 +133,7 @@ stepwise_weight = 1
 
 # SOme of the loss functions we defined
 # %%
+# Using the VGG19 pretrained net, get the facial feature map and compare the two images' facial features
 def perceptual_loss(y_true, y_pred):
     x = tf.image.resize(y_true,(224,224))
     y = tf.image.resize(y_pred,(224,224))
